@@ -1,31 +1,34 @@
-from pipeline.ingest import load_data
+from pipeline.ingest import load_data_in_chunks
 from pipeline.validate import validate_data
 from pipeline.transform import transform_data
 from pipeline.audit_rules import apply_audit_rules
 from pipeline.output import save_data
 from utils.logger import setup_logger
+import pandas as pd
 
 
 def run_pipeline():
     logger = setup_logger()
+    logger.info("Starting audit data pipeline (chunked mode)")
 
-    logger.info("Starting audit data pipeline")
+    processed_chunks = []
 
-    df = load_data()
-    logger.info(f"Loaded data with {len(df)} rows")
+    for i, chunk in enumerate(load_data_in_chunks()):
+        logger.info(f"Processing chunk {i+1}")
 
-    df = validate_data(df)
-    logger.info(f"After validation: {len(df)} rows")
+        chunk = validate_data(chunk)
+        chunk = transform_data(chunk)
+        chunk = apply_audit_rules(chunk)
 
-    df = transform_data(df)
-    logger.info(f"After transformation: {len(df)} rows")
+        processed_chunks.append(chunk)
 
-    df = apply_audit_rules(df)
-    logger.info("Audit rules applied")
+    final_df = pd.concat(processed_chunks, ignore_index=True)
 
-    save_data(df)
+    save_data(final_df)
+
     logger.info("Pipeline completed successfully")
 
 
 if __name__ == "__main__":
     run_pipeline()
+
