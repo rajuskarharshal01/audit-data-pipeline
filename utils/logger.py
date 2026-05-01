@@ -2,7 +2,7 @@ import logging
 from utils.config import settings
 
 def setup_logger():
-    logger = logging.getLogger("audit_pipelinne")
+    logger = logging.getLogger("audit_pipeline")
     logger.setLevel(logging.INFO)
 
     if logger.handlers:
