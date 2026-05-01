@@ -10,6 +10,9 @@ def run_pipeline():
     df = validate_data(df)
     df = transform_data(df)
     df = apply_audit_rules(df)
+
+    print(df.head())  # debug visibility
+
     save_data(df)
 
 

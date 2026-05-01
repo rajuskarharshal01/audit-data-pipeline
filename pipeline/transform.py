@@ -6,7 +6,7 @@ def transform_data(df: pd.DataFrame) -> pd.DataFrame:
     df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
 
 
-    df = df.dropna(subset=["amount"])
+    df["currency"] = df["currency"].str.upper().str.strip()
 
-    df["currency"] = df["currency"].str.upper()
+    df = df.drop_duplicates(subset=["transaction_id"])
     return df
